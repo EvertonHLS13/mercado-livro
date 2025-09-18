@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfig.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mercado-livro</a> &gt; <a href="index.source.html" class="el_package">com.mercadolivro.config</a> &gt; <span class="el_source">SecurityConfig.kt</span></div><h1>SecurityConfig.kt</h1><pre class="source lang-java linenums">package com.mercadolivro.config
+
+import com.mercadolivro.repository.CustomerRepository
+import com.mercadolivro.security.AuthenticationFilter
+import com.mercadolivro.security.CustomAuthenticationEntryPoint
+import com.mercadolivro.security.JwtUtil
+import com.mercadolivro.service.UserDetailsCustomService
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+
+<span class="fc" id="L25">@Configuration</span>
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
+<span class="fc" id="L28">class SecurityConfig(</span>
+<span class="fc" id="L29">    private val customerRepository: CustomerRepository,</span>
+<span class="fc" id="L30">    private val userDetails: UserDetailsCustomService,</span>
+<span class="fc" id="L31">    private val jwtUtil: JwtUtil,</span>
+<span class="fc" id="L32">    private val customEntryPoint: CustomAuthenticationEntryPoint</span>
+) {
+
+<span class="fc" id="L35">    private val PUBLIC_MATCHERS = arrayOf(</span>
+<span class="fc" id="L36">        &quot;/swagger-ui/**&quot;,</span>
+<span class="fc" id="L37">        &quot;/v3/api-docs/**&quot;,</span>
+<span class="fc" id="L38">        &quot;/swagger-ui.html&quot;,</span>
+<span class="fc" id="L39">        &quot;/util/migrate-passwords&quot;</span>
+    )
+
+<span class="fc" id="L42">    private val PUBLIC_POST_MATCHERS = arrayOf(&quot;/customers&quot;)</span>
+<span class="fc" id="L43">    private val ADMIN_MATCHERS = arrayOf(&quot;/admin/**&quot;)</span>
+<span class="fc" id="L44">    private val PUBLIC_GET_MATCHERS = arrayOf(&quot;/books&quot;)</span>
+
+    // ✅ Bean disponível para injeção em qualquer classe
+    @Bean
+    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
+<span class="fc" id="L49">        return BCryptPasswordEncoder()</span>
+    }
+
+    @Bean
+    fun authenticationProvider(): AuthenticationProvider {
+<span class="fc" id="L54">        val provider = DaoAuthenticationProvider()</span>
+<span class="fc" id="L55">        provider.setUserDetailsService(userDetails)</span>
+<span class="fc" id="L56">        provider.setPasswordEncoder(bCryptPasswordEncoder())</span>
+<span class="fc" id="L57">        return provider</span>
+    }
+
+    @Bean
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =
+<span class="fc" id="L62">        authConfig.authenticationManager</span>
+
+    @Bean
+    fun securityFilterChain(
+        http: HttpSecurity,
+        authManager: AuthenticationManager,
+        authenticationEntryPoint: AuthenticationEntryPoint
+    ): SecurityFilterChain {
+<span class="fc" id="L70">        val authenticationFilter = AuthenticationFilter(authManager, customerRepository, jwtUtil)</span>
+
+<span class="fc" id="L72">        http</span>
+<span class="fc" id="L73">            .csrf { it.disable() }</span>
+<span class="fc" id="L74">            .cors { cors -&gt;</span>
+<span class="fc" id="L75">                cors.configurationSource {</span>
+<span class="nc" id="L76">                    val config = CorsConfiguration()</span>
+<span class="nc" id="L77">                    config.allowCredentials = true</span>
+<span class="nc" id="L78">                    config.addAllowedOriginPattern(&quot;*&quot;)</span>
+<span class="nc" id="L79">                    config.addAllowedHeader(&quot;*&quot;)</span>
+<span class="nc" id="L80">                    config.addAllowedMethod(&quot;*&quot;)</span>
+<span class="nc" id="L81">                    config</span>
+                }
+<span class="fc" id="L83">            }</span>
+<span class="fc" id="L84">            .authorizeHttpRequests { auth -&gt;</span>
+<span class="fc" id="L85">                auth</span>
+<span class="fc" id="L86">                    .requestMatchers(&quot;/login&quot;).permitAll()</span>
+<span class="fc" id="L87">                    .requestMatchers(*PUBLIC_MATCHERS).permitAll()</span>
+<span class="fc" id="L88">                    .requestMatchers(HttpMethod.GET, *PUBLIC_GET_MATCHERS).permitAll()</span>
+<span class="fc" id="L89">                    .requestMatchers(HttpMethod.POST, *PUBLIC_POST_MATCHERS).permitAll()</span>
+<span class="fc" id="L90">                    .requestMatchers(*ADMIN_MATCHERS).hasAuthority(com.mercadolivro.enums.Role.ADMIN.description)</span>
+<span class="fc" id="L91">                    .anyRequest().authenticated()</span>
+<span class="fc" id="L92">            }</span>
+<span class="fc" id="L93">            .sessionManagement { session -&gt;</span>
+<span class="fc" id="L94">                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span>
+<span class="fc" id="L95">            }</span>
+<span class="fc" id="L96">            .authenticationProvider(authenticationProvider())</span>
+<span class="fc" id="L97">            .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter::class.java)</span>
+<span class="fc" id="L98">            .exceptionHandling { it.authenticationEntryPoint(customEntryPoint) }</span>
+
+<span class="fc" id="L100">        return http.build()</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

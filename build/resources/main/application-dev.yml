@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mercadolivro?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+    show-sql: true       # opcional, útil para debug
+    properties:
+      hibernate:
+        format_sql: true # opcional, formata o SQL no log
+
+  jackson:
+    default-property-inclusion: non-null
+
+jwt:
+  secret: c2ea1eb3-e653-46e0-ab96-056b440ef749
+  expiration: 999999

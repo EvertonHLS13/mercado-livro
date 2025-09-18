@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>estruturawhen.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mercado-livro</a> &gt; <a href="index.source.html" class="el_package">fundamentos</a> &gt; <span class="el_source">estruturawhen.kt</span></div><h1>estruturawhen.kt</h1><pre class="source lang-java linenums">package fundamentos
+
+fun main(){
+
+//    val x = 25
+
+//    when(x) {
+//        5, -5 -&gt; println(&quot;x == 5&quot;)
+//        8 -&gt; println(&quot;x == 8&quot;)
+//        9 -&gt; println(&quot;x == 9&quot;)
+//        10 -&gt;{
+//            println(&quot;x == 10&quot;)
+//            println(&quot;x é uma dezena&quot;)
+//        }
+//        in 11..15 -&gt; println(&quot;x está entre 11 e 15&quot;)
+//        !in 16 ..20 -&gt; println(&quot;Não está no range de 16 a 20&quot;)
+//        else -&gt; println(&quot;Numero não mapeado&quot;)
+//    }
+
+<span class="nc" id="L20">      when{</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">          comecacomOi(5) -&gt; println(&quot;5&quot;)</span>
+          //comecacomOi(&quot;Oi, tudo bem?&quot;) -&gt; println(&quot;Oi, tudo bem?&quot;)
+<span class="nc bnc" id="L23" title="All 2 branches missed.">          comecacomOi(&quot;Oi, estou bem!&quot;) -&gt; println(&quot;Oi, estou bem!&quot;)</span>
+      }
+
+<span class="nc" id="L26">}</span>
+
+fun comecacomOi(x: Any): Boolean {
+<span class="nc" id="L29">    return when(x){</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        is String -&gt; x.startsWith(&quot;Oi&quot;)</span>
+<span class="nc" id="L31">        else -&gt; false</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

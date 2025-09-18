@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>companionobject.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mercado-livro</a> &gt; <a href="index.source.html" class="el_package">fundamentos</a> &gt; <span class="el_source">companionobject.kt</span></div><h1>companionobject.kt</h1><pre class="source lang-java linenums">package fundamentos
+
+<span class="nc" id="L3">class MinhaClasse(</span>
+<span class="nc" id="L4">    var nome: String,</span>
+<span class="nc" id="L5">    var endereco: String,</span>
+<span class="nc" id="L6">    var idade: Int</span>
+
+) {
+    companion object { // Utilizar um método sem precisar instanciar a classe
+        fun criarComValoresPadrao(): MinhaClasse {
+<span class="nc" id="L11">            return MinhaClasse(&quot;Gustavo&quot;, &quot;Rua teste&quot;, 24)</span>
+        }
+
+        fun criarApartirDeSegundaClasse(segundaClasse: SegundaClasse): MinhaClasse{
+<span class="nc" id="L15">            return MinhaClasse(segundaClasse.nome, segundaClasse.endereco, segundaClasse.idade)</span>
+        }
+
+    }
+}
+
+<span class="nc" id="L21">class SegundaClasse(</span>
+<span class="nc" id="L22">    var nome: String,</span>
+<span class="nc" id="L23">    var endereco: String,</span>
+<span class="nc" id="L24">    var idade: Int</span>
+
+) {
+    fun criarComValoresPadrao(): SegundaClasse {
+<span class="nc" id="L28">        return SegundaClasse(&quot;Gustavo&quot;, &quot;Rua teste&quot;, 24)</span>
+    }
+}
+
+fun main(){
+
+<span class="nc" id="L34">    var segundaClasse = SegundaClasse(&quot;nome&quot;, &quot;endereco&quot;, 10).criarComValoresPadrao()</span>
+
+<span class="nc" id="L36">    var minhaLoader = MinhaClasse.criarApartirDeSegundaClasse(segundaClasse) // chama o objeto manipulando a classe e a função</span>
+
+
+
+<span class="nc" id="L40">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
